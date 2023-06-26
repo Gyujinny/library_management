@@ -1,8 +1,14 @@
 import logging
+import re
+import sys
 from dataclasses import dataclass
 from typing import List
 
+import unidecode as unidecode
+
 logger = logging.getLogger(__name__)
+
+sys.setrecursionlimit(3)
 
 
 @dataclass
@@ -69,6 +75,13 @@ class Members:
         """
         book.is_available = True
         self.books_borrowed.remove(book)
+
+
+def _clean_input(input_str: str) -> str:
+    """
+    Clean input string.
+    """
+    return unidecode.unidecode(re.sub('[.,();]:', '', input_str.lower().rstrip()))
 
 
 class Library:
@@ -164,6 +177,31 @@ class Library:
             continue
         return False
 
+    def search_book(self, book_info: dict) -> Book:
+        """
+        Search a book by title.
+
+        :param book_info: A dictionary of book information.{id: int, title: str, author: str, isbn_no: str}
+        """
+        try:
+            # TODO: Add more search options. now checking only one field that is available in book_info by priority.
+            for book in self._books:
+                if book_info['id'] == book.id:
+                    return book
+                elif book_info['isbn_no'] == book.isbn_no:
+                    return book
+                # ToDO: Add more search options.
+                elif _clean_input(book_info['author']) in _clean_input(book.author):
+                    return book
+                # ToDO: Add more search options.
+                elif _clean_input(book_info['title']) in _clean_input(book.title):
+                    return book
+
+        except Exception as e:
+            logger.error(e, 'Please try again with different input.')
+
+        return logger.error(e, 'Book not found. Please try again with different input.')
+
 
 class LibraryManager:
     """
@@ -171,24 +209,142 @@ class LibraryManager:
     """
 
     def __init__(self) -> None:
-        pass
+        """
+        Initialize a library management system.
+        """
+        self.library = Library()
+        self.command_dict = {
+            '1': 'Add a book',
+            '2': 'Remove a book',
+            '3': 'Add a member',
+            '4': 'Remove a member',
+            '5': 'Lend a book',
+            '6': 'Return a book',
+            '7': 'Search a book',
+            '8': 'Search a member'}
 
     def get_command(self) -> None:
         """
         Get a command from the user.
         """
-        print("""
-        Welcome to the Library Management System.
+        try:
+            while True:
+                self.get_command()
+                command = input('Enter a command: ')
+                if command == '1':
+                    book_info = self._get_book_info()
+                    book = Book(**book_info)
+                    self.library.add_book(book)
+                elif command == '2':
+                    book_info = self._get_book_info()
+                    book = self.library.search_book(book_info)
+                    if book is None:
+                        self.interface()
+                    self.library.remove_book(book)
+                elif command == '3':
+                    member_info = self._get_member_info()
+                    member = Members(**member_info)
+                    self.library.add_member(member)
+                elif command == '4':
+                    member_info = self._get_member_info()
+                    member = self.library.search_member(member_info)
+                    self.library.remove_member(member)
+                elif command == '5':
+                    member_info = self._get_member_info()
+                    member = self.library.search_member(member_info)
+                    book_info = self._get_book_info()
+                    book = self.library.search_book(book_info)
+                    self.library.lend_book(member, book)
+                elif command == '6':
+                    member_info = self._get_member_info()
+                    member = self.library.search_member(member_info)
+                    book_info = self._get_book_info()
+                    book = self.library.search_book(book_info)
+                    self.library.return_book(member, book)
+                elif command == '7':
+                    break
+                else:
+                    print('Invalid command.')
+        except Exception as e:
+            logger.error(e)
+            self.interface()
 
-        Please select an option:
-        1. Add a book
-        2. Remove a book
-        3. Add a member
-        4. Remove a member
-        5. Lend a book
-        6. Return a book
-        7. Exit
-        """)
+    def interface(self) -> None:
+        """
+        An interface for the Library Management System.
+        """
+        print("""
+Welcome to the Library Management System.
+
+Please select an option:
+1. Add a book
+2. Remove a book
+3. Add a member
+4. Remove a member
+5. Lend a book
+6. Return a book
+7. Exit
+                """)
+        self.get_command()
+
+    def _get_book_info(self, command_number: int) -> dict:
+        """
+        Get book information from the user.
+        """
+
+        print(f"""In order to do {self.command_dict[command_number]},
+        the book info is necessary. Please enter book information:""")
+
+        try:
+            book_info = {}
+            book_info['id'] = int(input('Enter book id: '))
+            book_info['title'] = input('Enter book title: ')
+            book_info['author'] = input('Enter book author: ')
+            book_info['isbn_no'] = input('Enter book isbn_no: ')
+            return book_info
+
+        except Exception as e:
+            logger.error(e)
+            print("""Book information in invalid. Please select an option:
+                    1. Go back to the main menu
+                    2. Try again""")
+            option = input('Enter an option: ')
+            if option == '1':
+                self.interface()
+            elif option == '2':
+                print('Please try again with different input.')
+                self._get_book_info(command_number)
+            else:
+                print('Invalid option. Going back to the main menu.')
+                self.interface()
+
+    def _get_member_info(self, command_number: int) -> dict:
+        """
+        Get member information from the user.
+        """
+        print(f"""In order to do {self.command_dict[command_number]},
+                the book info is necessary. Please enter book information:""")
+
+        try:
+            member_info = {}
+            member_info['id'] = int(input('Enter member id: '))
+            member_info['name'] = input('Enter member name: ')
+            member_info['phone'] = input('Enter member phone: ')
+            return member_info
+        except Exception as e:
+            logger.error(e)
+            print("""Member information in invalid. Please select an option:
+                1. Go back to the main menu
+                2. Try again""")
+            option = input('Enter an option: ')
+            if option == '1':
+                self.interface()
+            elif option == '2':
+                print('Please try again with different input.')
+                self._get_member_info(command_number)
+            else:
+                print('Invalid option. Going back to the main menu.')
+                self.interface()
 
 
 def main() -> None:

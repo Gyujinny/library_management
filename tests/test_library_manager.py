@@ -116,7 +116,7 @@ class TestLibrary(TestCase):
 
     def test_return_book_fail_not_lended(self):
         """
-        Test returning a book that is not lended to a member.
+        Test returning a book that is not lent to a member.
         """
         member = Members(**self.fake_member)
         book = Book(**self.fake_book)
