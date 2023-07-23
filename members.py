@@ -3,6 +3,7 @@ from typing import List
 
 from book import Book
 
+
 @dataclass
 class Book:
     """
@@ -21,7 +22,6 @@ class Book:
     is_available: bool = True
 
 
-
 @dataclass
 class Members:
     """
@@ -32,6 +32,7 @@ class Members:
     :cvar member_id: A unique id for a member.
     :cvar books_borrowed: A list of books borrowed.
     """
+
     id: int
     name: str
     member_id: int

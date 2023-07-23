@@ -1,7 +1,8 @@
-from faker import Faker
 from unittest import TestCase
 
-from ..library_manager import Book, Members, Library
+from faker import Faker
+
+from ..library_manager import Book, Library, Members
 
 
 class TestLibrary(TestCase):
@@ -33,7 +34,7 @@ class TestLibrary(TestCase):
         """
         Tear down the library manager.
         """
-        self.library = None
+        self.library = None  # not necessary
 
     def test_add_book(self):
         """
