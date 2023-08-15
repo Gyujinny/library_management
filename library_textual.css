@@ -1,0 +1,27 @@
+Screen {
+    layout: vertical;
+}
+
+.box {
+    height: 1fr;
+    border: solid green;
+}
+
+LibraryMenu {
+    min-width: 50;
+    margin: 1;
+    padding: 1;
+    background: $boost;
+    content-align: center middle;
+}
+
+Button {
+    width: 25;
+    height: 3;
+    content-align: center middle;
+    text-opacity: 90%;
+}
+
+.hidden{
+    display: none;
+}

@@ -1,6 +1,5 @@
 import logging
 import re
-import sys
 from dataclasses import dataclass
 from typing import List
 
@@ -172,10 +171,10 @@ class Library:
                     return book
                 elif book_info["isbn_no"] == book.isbn_no:
                     return book
-                # ToDO: Add more search options.
+                # TODO: Add more search options.
                 elif _clean_input(book_info["author"]) in _clean_input(book.author):
                     return book
-                # ToDO: Add more search options.
+                # TODO: Add more search options.
                 elif _clean_input(book_info["title"]) in _clean_input(book.title):
                     return book
 
@@ -245,6 +244,13 @@ class LibraryManager:
             "8": "Search a member",
         }
 
+    def add_book(self) -> None:
+        book_info = self._get_book_info()
+        book = Book(**book_info)
+        self.library.add_book(book)
+        print("a book has beend added. Thank you.")
+        print(book)
+
     def get_command(self) -> None:
         """
         Get a command from the user.
@@ -254,9 +260,7 @@ class LibraryManager:
                 print_menu()
                 command = input("Enter a command: ")
                 if command == "1":
-                    book_info = self._get_book_info(command)
-                    book = Book(**book_info)
-                    self.library.add_book(book)
+                    self.add_book()
                 elif command == "2":
                     book_info = self._get_book_info(command)
                     book = self.library.search_book(book_info)
@@ -295,14 +299,13 @@ class LibraryManager:
         """
         self.get_command()
 
-    def _get_book_info(self, command_number: int) -> dict:
+    def _get_book_info(self) -> dict:
         """
         Get book information from the user.
         """
 
         print(
-            f"""In order to do {self.command_dict[command_number]},
-        the book info is necessary. Please enter book information:"""
+            """In order to do so,  the book info is necessary. Please enter book information:"""
         )
 
         try:
