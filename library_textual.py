@@ -192,6 +192,9 @@ class ReturnBook(LibrarianBaseClass):
         self.accepts_member_book(lm.library.return_book, "Book returned successfully")
 
 
+###############
+#     Log     #
+###############
 class Screen(Static):
     """
     A class to represent the screen of a library. Disabled for now.
@@ -236,6 +239,9 @@ class LogWidget(Static):
         log.write_line("Log widget ready")
 
 
+###############
+#     Menu    #
+###############
 class LibraryMenu(Static):
     """
     A Widget to represent the menu of a library.
@@ -252,6 +258,9 @@ class LibraryMenu(Static):
         yield Button("Log", id="log")
 
 
+###############
+#     APP     #
+###############
 class LibraryApp(App):
     """The main Textual app to manage library."""
 
