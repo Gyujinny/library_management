@@ -111,9 +111,10 @@ class Librarian(Static):
         yield Input(placeholder="Please enter the details here")
         yield Button("Submit the details")
 
-    @on(Input.Submitted, "#lend_book")
-    @on(Button.Pressed, "#lend_book")
-    def accepts_add_member(self):
+class LendBook(Librarian):
+    @on(Input.Submitted)
+    @on(Button.Pressed)
+    def accepts_lend_book(self):
         """ A method to handle the event when the user presses the enter key."""
         input = self.query_one(Input)
         data = input.value
@@ -122,11 +123,12 @@ class Librarian(Static):
         member = data[0]
         book = data[1]
         lm.library.lend_book(member, book)
-        self.mount(Label("Member added successfully"))
+        self.mount(Label("Book lended successfully"))
         input.value = ""
 
-    @on(Input.Submitted, "#return_book")
-    @on(Button.Pressed, "#return_book")
+class ReturnBook(Librarian):
+    @on(Input.Submitted)
+    @on(Button.Pressed)
     def accepts_add_member(self):
         input = self.query_one(Input)
         data = input.value
@@ -134,8 +136,8 @@ class Librarian(Static):
         data = Book(**json.loads(data))
         member = data[0]
         book = data[1]
-        lm.library.lend_book(member, book)
-        self.mount(Label("Member added successfully"))
+        lm.library.return_book(member, book)
+        self.mount(Label("Book Returned successfully"))
         input.value = ""
 
 
@@ -231,9 +233,9 @@ class LibraryApp(App):
             with VerticalScroll(id="remove_member"):
                 yield RemoveMemberManager("Remove Member", classes="box")
             with VerticalScroll(id="lend_book"):
-                yield Librarian("Lend Book", classes="box")
+                yield LendBook("Lend Book", classes="box")
             with VerticalScroll(id="return_book"):
-                yield Librarian("Return Book", classes="box")
+                yield ReturnBook("Return Book", classes="box")
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         self.query_one(ContentSwitcher).current = event.button.id
