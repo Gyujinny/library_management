@@ -111,6 +111,7 @@ class Librarian(Static):
         yield Input(placeholder="Please enter the details here")
         yield Button("Submit the details")
 
+
 class LendBook(Librarian):
     @on(Input.Submitted)
     @on(Button.Pressed)
@@ -123,8 +124,9 @@ class LendBook(Librarian):
         member = data[0]
         book = data[1]
         lm.library.lend_book(member, book)
-        self.mount(Label("Book lended successfully"))
+        self.mount(Label("Book lent successfully"))
         input.value = ""
+
 
 class ReturnBook(Librarian):
     @on(Input.Submitted)
