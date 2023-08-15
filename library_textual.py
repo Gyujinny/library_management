@@ -1,5 +1,6 @@
 import asyncio
 import json
+from typing import Callable
 
 from rich.json import JSON
 from textual import on
@@ -25,6 +26,7 @@ TEXT = f"""
     Please enter the details in the following format:
     """
 
+
 ###############
 #   Widgets   #
 ###############
@@ -42,15 +44,8 @@ class BookManagerBaseClass(Static):
         yield Input(placeholder="Please enter the details here")
         yield Button("Submit the details")
 
-
-class AddBookManagerBaseClass(BookManagerBaseClass):
-    """
-    A widget to add a book to the library.
-    """
-    @on(Input.Submitted)
-    @on(Button.Pressed)
-    def accepts_add_book(self):
-        """ A method to handle the event when the user presses the enter key."""
+    def accepts_book(self, function: Callable, msg: str):
+        """ A function to handle the event when the user presses the enter key or button."""
         input = self.query_one(Input)
         data = input.value
         self.mount(Label(data))
@@ -59,40 +54,42 @@ class AddBookManagerBaseClass(BookManagerBaseClass):
             return
         try:
             book = Book(**json.loads(data))
-            lm.library.add_book(book)
-            self.mount(Label("Book added successfully"))
+            function(book)
+            self.mount(Label(msg))
         except ValueError as e:
             self.mount(Label(str(e)))
         input.value = ""
+
+
+class AddBookManagerBaseClass(BookManagerBaseClass):
+    """
+    A widget to add a book to the library.
+    """
+
+    @on(Input.Submitted)
+    @on(Button.Pressed)
+    def accepts_add_book(self):
+        """ A method to handle the event when the user presses the enter key."""
+        self.accepts_book(lm.library.add_book, "Book added successfully")
 
 
 class RemoveBookManagerBaseClass(BookManagerBaseClass):
     """
     A widget to remove a book from the library.
     """
+
     @on(Input.Submitted)
     @on(Button.Pressed)
-    def accepts_remove_book(self):
+    def accepts_add_book(self):
         """ A method to handle the event when the user presses the enter key."""
-        input = self.query_one(Input)
-        data = input.value
-        self.mount(Label(data))
-        if not data:
-            self.mount(Label("Please enter the details"))
-            return
-        try:
-            book = Book(**json.loads(data))
-            lm.library.remove_book(book)
-            self.mount(Label("Book removed successfully"))
-        except ValueError as e:
-            self.mount(Label(str(e)))
-        input.value = ""
+        self.accepts_book(lm.library.remove_book, "Book removed successfully")
 
 
 class MemberManagerBaseClass(Static):
     """
     A Base class for the Member Manager.
     """
+
     def compose(self) -> ComposeResult:
         """A method to compose a screen of a library."""
         yield Header(name="Library Manager")
@@ -100,14 +97,7 @@ class MemberManagerBaseClass(Static):
         yield Input(placeholder="Please enter the details here")
         yield Button("Submit the details")
 
-
-class AddMemberManagerBaseClass(MemberManagerBaseClass):
-    """
-    A widget to add a member to the library.
-    """
-    @on(Input.Submitted)
-    @on(Button.Pressed)
-    def accepts_add_member(self):
+    def accepts_member(self, function: Callable, msg: str):
         """ A method to handle the event when the user presses the enter key."""
         input = self.query_one(Input)
         data = input.value
@@ -117,34 +107,35 @@ class AddMemberManagerBaseClass(MemberManagerBaseClass):
             return
         try:
             member = Book(**json.loads(data))
-            lm.library.add_meber(member)
-            self.mount(Label("Member added successfully"))
+            function(member)
+            self.mount(Label(msg))
         except ValueError as e:
             self.mount(Label(str(e)))
         input.value = ""
+
+
+class AddMemberManagerBaseClass(MemberManagerBaseClass):
+    """
+    A widget to add a member to the library.
+    """
+
+    @on(Input.Submitted)
+    @on(Button.Pressed)
+    def accepts_add_member(self):
+        """ A method to handle the event when the user presses the enter key."""
+        self.accepts_member(lm.library.add_member, "Member added successfully")
 
 
 class RemoveMemberManagerBaseClass(MemberManagerBaseClass):
     """
     A widget to remove a member from the library.
     """
+
     @on(Input.Submitted)
     @on(Button.Pressed)
-    def accepts_add_member(self):
+    def accepts_remove_member(self):
         """ A method to handle the event when the user presses the enter key."""
-        input = self.query_one(Input)
-        data = input.value
-        self.mount(Label(data))
-        if not data:
-            self.mount(Label("Please enter the details"))
-            return
-        try:
-            member = Book(**json.loads(data))
-            lm.library.remove_meber(member)
-            self.mount(Label("Member removed successfully"))
-        except ValueError as e:
-            self.mount(Label(str(e)))
-        input.value = ""
+        self.accepts_member(lm.library.remove_member, "Member removed successfully")
 
 
 class LibrarianBaseClass(Static):
@@ -159,15 +150,7 @@ class LibrarianBaseClass(Static):
         yield Input(placeholder="Please enter the details here")
         yield Button("Submit the details")
 
-
-class LendBook(LibrarianBaseClass):
-    """
-    A widget to lend a book to a member.
-    """
-    @on(Input.Submitted)
-    @on(Button.Pressed)
-    def accepts_lend_book(self):
-        """ A method to handle the event when the user presses the enter key."""
+    def accepts_member_book(self, function: Callable, msg: str):
         input = self.query_one(Input)
         data = input.value
         self.mount(Label(data))
@@ -178,35 +161,35 @@ class LendBook(LibrarianBaseClass):
             data = Book(**json.loads(data))
             member = data[0]
             book = data[1]
-            lm.library.lend_book(member, book)
-            self.mount(Label("Book lent successfully"))
+            function(member, book)
+            self.mount(Label(msg))
         except ValueError as e:
             self.mount(Label(str(e)))
         input.value = ""
+
+
+class LendBook(LibrarianBaseClass):
+    """
+    A widget to lend a book to a member.
+    """
+
+    @on(Input.Submitted)
+    @on(Button.Pressed)
+    def accepts_lend_book(self):
+        """ A method to handle the event when the user presses the enter key."""
+        self.accepts_member_book(lm.library.lend_book, "Book lent successfully")
 
 
 class ReturnBook(LibrarianBaseClass):
     """
     A widget to return a book to the library.
     """
+
     @on(Input.Submitted)
     @on(Button.Pressed)
     def accepts_add_member(self):
-        input = self.query_one(Input)
-        data = input.value
-        self.mount(Label(data))
-        if not data:
-            self.mount(Label("Please enter the details"))
-            return
-        try:
-            data = Book(**json.loads(data))
-            member = data[0]
-            book = data[1]
-            lm.library.return_book(member, book)
-            self.mount(Label("Book Returned successfully"))
-        except ValueError as e:
-            self.mount(Label(str(e)))
-        input.value = ""
+        """ A method to handle the event when the user presses the enter key."""
+        self.accepts_member_book(lm.library.return_book, "Book returned successfully")
 
 
 class Screen(Static):
