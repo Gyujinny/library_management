@@ -25,8 +25,15 @@ TEXT = f"""
     Please enter the details in the following format:
     """
 
+###############
+#   Widgets   #
+###############
 
-class BookManager(Static):
+
+class BookManagerBaseClass(Static):
+    """
+    A Base class for the Book Manager.
+    """
 
     def compose(self) -> ComposeResult:
         """A method to compose a screen of a library."""
@@ -36,7 +43,10 @@ class BookManager(Static):
         yield Button("Submit the details")
 
 
-class AddBookManager(BookManager):
+class AddBookManagerBaseClass(BookManagerBaseClass):
+    """
+    A widget to add a book to the library.
+    """
     @on(Input.Submitted)
     @on(Button.Pressed)
     def accepts_add_book(self):
@@ -44,13 +54,22 @@ class AddBookManager(BookManager):
         input = self.query_one(Input)
         data = input.value
         self.mount(Label(data))
-        book = Book(**json.loads(data))
-        lm.library.add_book(book)
-        self.mount(Label("Book added successfully"))
+        if not data:
+            self.mount(Label("Please enter the details"))
+            return
+        try:
+            book = Book(**json.loads(data))
+            lm.library.add_book(book)
+            self.mount(Label("Book added successfully"))
+        except ValueError as e:
+            self.mount(Label(str(e)))
         input.value = ""
 
 
-class RemoveBookManager(BookManager):
+class RemoveBookManagerBaseClass(BookManagerBaseClass):
+    """
+    A widget to remove a book from the library.
+    """
     @on(Input.Submitted)
     @on(Button.Pressed)
     def accepts_remove_book(self):
@@ -58,14 +77,22 @@ class RemoveBookManager(BookManager):
         input = self.query_one(Input)
         data = input.value
         self.mount(Label(data))
-        book = Book(**json.loads(data))
-        lm.library.remove_book(book)
-        self.mount(Label("Book removed successfully"))
+        if not data:
+            self.mount(Label("Please enter the details"))
+            return
+        try:
+            book = Book(**json.loads(data))
+            lm.library.remove_book(book)
+            self.mount(Label("Book removed successfully"))
+        except ValueError as e:
+            self.mount(Label(str(e)))
         input.value = ""
 
 
-class MemberManager(Static):
-
+class MemberManagerBaseClass(Static):
+    """
+    A Base class for the Member Manager.
+    """
     def compose(self) -> ComposeResult:
         """A method to compose a screen of a library."""
         yield Header(name="Library Manager")
@@ -74,7 +101,10 @@ class MemberManager(Static):
         yield Button("Submit the details")
 
 
-class AddMemberManager(MemberManager):
+class AddMemberManagerBaseClass(MemberManagerBaseClass):
+    """
+    A widget to add a member to the library.
+    """
     @on(Input.Submitted)
     @on(Button.Pressed)
     def accepts_add_member(self):
@@ -82,13 +112,22 @@ class AddMemberManager(MemberManager):
         input = self.query_one(Input)
         data = input.value
         self.mount(Label(data))
-        member = Book(**json.loads(data))
-        lm.library.add_meber(member)
-        self.mount(Label("Member added successfully"))
+        if not data:
+            self.mount(Label("Please enter the details"))
+            return
+        try:
+            member = Book(**json.loads(data))
+            lm.library.add_meber(member)
+            self.mount(Label("Member added successfully"))
+        except ValueError as e:
+            self.mount(Label(str(e)))
         input.value = ""
 
 
-class RemoveMemberManager(MemberManager):
+class RemoveMemberManagerBaseClass(MemberManagerBaseClass):
+    """
+    A widget to remove a member from the library.
+    """
     @on(Input.Submitted)
     @on(Button.Pressed)
     def accepts_add_member(self):
@@ -96,13 +135,22 @@ class RemoveMemberManager(MemberManager):
         input = self.query_one(Input)
         data = input.value
         self.mount(Label(data))
-        member = Book(**json.loads(data))
-        lm.library.remove_meber(member)
-        self.mount(Label("Member removed successfully"))
+        if not data:
+            self.mount(Label("Please enter the details"))
+            return
+        try:
+            member = Book(**json.loads(data))
+            lm.library.remove_meber(member)
+            self.mount(Label("Member removed successfully"))
+        except ValueError as e:
+            self.mount(Label(str(e)))
         input.value = ""
 
 
-class Librarian(Static):
+class LibrarianBaseClass(Static):
+    """
+    A Base class for the Librarian.
+    """
 
     def compose(self) -> ComposeResult:
         """A method to compose a screen of a library."""
@@ -112,7 +160,10 @@ class Librarian(Static):
         yield Button("Submit the details")
 
 
-class LendBook(Librarian):
+class LendBook(LibrarianBaseClass):
+    """
+    A widget to lend a book to a member.
+    """
     @on(Input.Submitted)
     @on(Button.Pressed)
     def accepts_lend_book(self):
@@ -120,31 +171,48 @@ class LendBook(Librarian):
         input = self.query_one(Input)
         data = input.value
         self.mount(Label(data))
-        data = Book(**json.loads(data))
-        member = data[0]
-        book = data[1]
-        lm.library.lend_book(member, book)
-        self.mount(Label("Book lent successfully"))
+        if not data:
+            self.mount(Label("Please enter the details"))
+            return
+        try:
+            data = Book(**json.loads(data))
+            member = data[0]
+            book = data[1]
+            lm.library.lend_book(member, book)
+            self.mount(Label("Book lent successfully"))
+        except ValueError as e:
+            self.mount(Label(str(e)))
         input.value = ""
 
 
-class ReturnBook(Librarian):
+class ReturnBook(LibrarianBaseClass):
+    """
+    A widget to return a book to the library.
+    """
     @on(Input.Submitted)
     @on(Button.Pressed)
     def accepts_add_member(self):
         input = self.query_one(Input)
         data = input.value
         self.mount(Label(data))
-        data = Book(**json.loads(data))
-        member = data[0]
-        book = data[1]
-        lm.library.return_book(member, book)
-        self.mount(Label("Book Returned successfully"))
+        if not data:
+            self.mount(Label("Please enter the details"))
+            return
+        try:
+            data = Book(**json.loads(data))
+            member = data[0]
+            book = data[1]
+            lm.library.return_book(member, book)
+            self.mount(Label("Book Returned successfully"))
+        except ValueError as e:
+            self.mount(Label(str(e)))
         input.value = ""
 
 
 class Screen(Static):
-    """A class to represent the screen of a library."""
+    """
+    A class to represent the screen of a library. Disabled for now.
+    """
     TITLE = "Screen"
     SUB_TITLE = "Please enter details here"
 
@@ -172,8 +240,9 @@ class Screen(Static):
         self.query_one("#results", Static).update(JSON(word))
 
 
-class LogWidget(App):
-    """A class to represent a terminal widget."""
+class LogWidget(Static):
+    """
+    A widget to represent a terminal widget."""
 
     def compose(self) -> ComposeResult:
         """A method to compose a log widget."""
@@ -185,7 +254,9 @@ class LogWidget(App):
 
 
 class LibraryMenu(Static):
-    """A class to represent the status of a library."""
+    """
+    A Widget to represent the menu of a library.
+    """
 
     def compose(self):
         """A method to compose the status of a library."""
@@ -195,10 +266,11 @@ class LibraryMenu(Static):
         yield Button("4. Remove a member", variant="error", id="remove_member")
         yield Button("5. Lend a book", variant="primary", id="lend_book")
         yield Button("6. Return a book", variant="error", id="return_book")
+        yield Button("Log", id="log")
 
 
 class LibraryApp(App):
-    """A Textual app to manage library."""
+    """The main Textual app to manage library."""
 
     BINDINGS = [
         ("q", "exit", "Exit"),
@@ -217,29 +289,29 @@ class LibraryApp(App):
         """Create child widgets for the app."""
         yield Header()
         yield Footer()
+
+        # Menu
         with ScrollableContainer(id="menu_container"):
-            yield Button("1. Add a book", variant="primary", id="add_book")
-            yield Button("2. Remove a book", variant="error", id="remove_book")
-            yield Button("3. Add a member", variant="primary", id="add_member")
-            yield Button("4. Remove a member", variant="error", id="remove_member")
-            yield Button("5. Lend a book", variant="primary", id="lend_book")
-            yield Button("6. Return a book", variant="error", id="return_book")
-        with ContentSwitcher(initial="screen"):
-            yield Screen("Screen", classes="box", id="screen")
+            yield LibraryMenu("Library Menu", classes="box")
+
+        # Widgets for each menu item
+        with ContentSwitcher(initial="log"):
+            yield LogWidget("Log", classes="box", id="log")
             with VerticalScroll(id="add_book"):
-                yield AddBookManager("Add Book", classes="box")
+                yield AddBookManagerBaseClass("Add Book", classes="box")
             with VerticalScroll(id="remove_book"):
-                yield RemoveBookManager("Remove Book", classes="box")
+                yield RemoveBookManagerBaseClass("Remove Book", classes="box")
             with VerticalScroll(id="add_member"):
-                yield AddMemberManager("Add Member", classes="box")
+                yield AddMemberManagerBaseClass("Add Member", classes="box")
             with VerticalScroll(id="remove_member"):
-                yield RemoveMemberManager("Remove Member", classes="box")
+                yield RemoveMemberManagerBaseClass("Remove Member", classes="box")
             with VerticalScroll(id="lend_book"):
                 yield LendBook("Lend Book", classes="box")
             with VerticalScroll(id="return_book"):
                 yield ReturnBook("Return Book", classes="box")
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
+        """A method to handle the event when a button is pressed."""
         self.query_one(ContentSwitcher).current = event.button.id
 
     def action_toggle_dark(self) -> None:
