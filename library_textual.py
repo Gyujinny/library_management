@@ -44,7 +44,7 @@ class BookManagerBaseClass(Static):
         yield Input(placeholder="Please enter the details here")
         yield Button("Submit the details")
 
-    def accepts_book(self, function: Callable, msg: str):
+    def accepts_book(self, function: Callable, msg: str) -> None:
         """ A function to handle the event when the user presses the enter key or button."""
         input = self.query_one(Input)
         data = input.value
@@ -68,7 +68,7 @@ class AddBookManagerBaseClass(BookManagerBaseClass):
 
     @on(Input.Submitted)
     @on(Button.Pressed)
-    def accepts_add_book(self):
+    def accepts_add_book(self) -> None:
         """ A method to handle the event when the user presses the enter key."""
         self.accepts_book(lm.library.add_book, "Book added successfully")
 
@@ -80,7 +80,7 @@ class RemoveBookManagerBaseClass(BookManagerBaseClass):
 
     @on(Input.Submitted)
     @on(Button.Pressed)
-    def accepts_add_book(self):
+    def accepts_add_book(self) -> None:
         """ A method to handle the event when the user presses the enter key."""
         self.accepts_book(lm.library.remove_book, "Book removed successfully")
 
@@ -97,7 +97,7 @@ class MemberManagerBaseClass(Static):
         yield Input(placeholder="Please enter the details here")
         yield Button("Submit the details")
 
-    def accepts_member(self, function: Callable, msg: str):
+    def accepts_member(self, function: Callable, msg: str) -> None:
         """ A method to handle the event when the user presses the enter key."""
         input = self.query_one(Input)
         data = input.value
@@ -121,7 +121,7 @@ class AddMemberManagerBaseClass(MemberManagerBaseClass):
 
     @on(Input.Submitted)
     @on(Button.Pressed)
-    def accepts_add_member(self):
+    def accepts_add_member(self) -> None:
         """ A method to handle the event when the user presses the enter key."""
         self.accepts_member(lm.library.add_member, "Member added successfully")
 
@@ -133,7 +133,7 @@ class RemoveMemberManagerBaseClass(MemberManagerBaseClass):
 
     @on(Input.Submitted)
     @on(Button.Pressed)
-    def accepts_remove_member(self):
+    def accepts_remove_member(self) -> None:
         """ A method to handle the event when the user presses the enter key."""
         self.accepts_member(lm.library.remove_member, "Member removed successfully")
 
@@ -150,7 +150,7 @@ class LibrarianBaseClass(Static):
         yield Input(placeholder="Please enter the details here")
         yield Button("Submit the details")
 
-    def accepts_member_book(self, function: Callable, msg: str):
+    def accepts_member_book(self, function: Callable, msg: str) -> None:
         input = self.query_one(Input)
         data = input.value
         self.mount(Label(data))
@@ -175,7 +175,7 @@ class LendBook(LibrarianBaseClass):
 
     @on(Input.Submitted)
     @on(Button.Pressed)
-    def accepts_lend_book(self):
+    def accepts_lend_book(self) -> None:
         """ A method to handle the event when the user presses the enter key."""
         self.accepts_member_book(lm.library.lend_book, "Book lent successfully")
 
@@ -187,7 +187,7 @@ class ReturnBook(LibrarianBaseClass):
 
     @on(Input.Submitted)
     @on(Button.Pressed)
-    def accepts_add_member(self):
+    def accepts_add_member(self) -> None:
         """ A method to handle the event when the user presses the enter key."""
         self.accepts_member_book(lm.library.return_book, "Book returned successfully")
 
@@ -241,7 +241,7 @@ class LibraryMenu(Static):
     A Widget to represent the menu of a library.
     """
 
-    def compose(self):
+    def compose(self) -> ComposeResult:
         """A method to compose the status of a library."""
         yield Button("1. Add a book", variant="primary", id="add_book")
         yield Button("2. Remove a book", variant="error", id="remove_book")
