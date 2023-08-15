@@ -22,7 +22,7 @@ MEMBER_EXAMPLE = """
 MEMBER_BOOK_EXAMPLE = MEMBER_EXAMPLE + ",  " + BOOK_EXAMPLE
 
 TEXT = f"""
-    Please enter the details of the book in the following format:
+    Please enter the details in the following format:
     """
 
 
